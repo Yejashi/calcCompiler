@@ -95,6 +95,7 @@ make
 
 ### Run
 `./lexer_driver`
+
 Example output:
 ```
 KW_with [with]
