@@ -93,7 +93,7 @@ cmake .. -DBUILD_LEXER=ON
 make
 ```
 
-## Run
+### Run
 `./lexer_driver`
 Example output:
 ```
