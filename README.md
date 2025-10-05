@@ -113,11 +113,11 @@ eoi
 ```
 Goals
 - [x] Implement lexer and token definitions
-- [] Add recursive-descent parser
-- [] Implement AST and evaluator
-- [] Add error handling and diagnostics
-- [] Integrate LLVM IR code generation
-- [] Build end-to-end compiler driver
+- [ ] Add recursive-descent parser
+- [ ] Implement AST and evaluator
+- [ ] Add error handling and diagnostics
+- [ ] Integrate LLVM IR code generation
+- [ ] Build end-to-end compiler driver
 
 
 
