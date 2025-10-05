@@ -62,12 +62,12 @@ Result = 1000
 ```
 CalcCompiler/
 ├── lexer/
-│ ├── lexer.cpp # Lexer implementation
-│ └── lexer.h # Lexer interface
+│ ├── lexer.cpp
+│ └── lexer.h
 ├── drivers/
 │ └── lexer/
-│ └── main.cpp # Lexer test driver
-├── CMakeLists.txt # Modular build system
+│ └── main.cpp
+├── CMakeLists.txt
 └── README.md
 ```
 
