@@ -111,7 +111,7 @@ ident [b]
 r_paren [)]
 eoi
 ```
-Goals
+## Goals
 - [x] Implement lexer and token definitions
 - [ ] Add recursive-descent parser
 - [ ] Implement AST and evaluator
