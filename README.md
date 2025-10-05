@@ -86,7 +86,7 @@ CalcCompiler/
 - CMake (≥ 3.16)
 - A C++17 compiler (GCC, Clang, etc.)
 
-## Build
+### Build
 ```bash
 mkdir build && cd build
 cmake .. -DBUILD_LEXER=ON
