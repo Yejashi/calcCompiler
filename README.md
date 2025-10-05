@@ -59,7 +59,8 @@ Result = 1000
 ```
 
 ## Project Structure
-alcCompiler/
+```
+CalcCompiler/
 ├── lexer/
 │ ├── lexer.cpp # Lexer implementation
 │ └── lexer.h # Lexer interface
@@ -68,6 +69,7 @@ alcCompiler/
 │ └── main.cpp # Lexer test driver
 ├── CMakeLists.txt # Modular build system
 └── README.md
+```
 
 ### Future Modules
 | Stage | Directory | Description |
