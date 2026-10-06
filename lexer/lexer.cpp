@@ -12,51 +12,78 @@ LLVM_READNONE inline bool isLetter(char c) {
 }
 }
 
+void Lexer::advanceTo(const char *End) {
+  for (const char *p = BufferPtr; p != End; ++p) {
+    if (*p == '\n') {
+      ++Line;
+      Column = 1;
+    } else {
+      ++Column;
+    }
+  }
+  BufferPtr = End;
+}
+
 void Lexer::next(Token &token) {
   while (*BufferPtr && charinfo::isWhitespace(*BufferPtr))
-    ++BufferPtr;
+    advanceTo(BufferPtr + 1);
 
   if (!*BufferPtr) {
     token.Kind = Token::eoi;
+    token.Pos  = position();
     token.Text = llvm::StringRef(BufferPtr, 0);
     return;
   }
+
+  const SourcePosition start = position();
 
   if (charinfo::isLetter(*BufferPtr)) {
     const char *end = BufferPtr + 1;
     while (charinfo::isLetter(*end))
       ++end;
     llvm::StringRef Name(BufferPtr, end - BufferPtr);
-    Token::TokenKind kind = (Name == "with") ? Token::KW_with : Token::ident;
-    formToken(token, end, kind);
+    formToken(token, end, (Name == "with") ? Token::KW_with : Token::ident);
     return;
-  } else if (charinfo::isDigit(*BufferPtr)) {
+  }
+
+  if (charinfo::isDigit(*BufferPtr)) {
     const char *end = BufferPtr + 1;
     while (charinfo::isDigit(*end))
       ++end;
+    if (*end == '.') {
+      // A fractional part must have at least one digit after the dot.
+      if (!charinfo::isDigit(end[1]))
+        throw CalcError(start, "malformed number literal '" +
+                                   std::string(BufferPtr, end - BufferPtr + 1) +
+                                   "'");
+      ++end;
+      while (charinfo::isDigit(*end))
+        ++end;
+    }
     formToken(token, end, Token::number);
     return;
-  } else {
-    switch (*BufferPtr) {
+  }
+
+  switch (*BufferPtr) {
 #define CASE(ch, tok) case ch: formToken(token, BufferPtr + 1, tok); break
-      CASE('+', Token::plus);
-      CASE('-', Token::minus);
-      CASE('*', Token::star);
-      CASE('/', Token::slash);
-      CASE('(', Token::l_paren);
-      CASE(')', Token::r_paren);
-      CASE(':', Token::colon);
-      CASE(',', Token::comma);
+    CASE('+', Token::plus);
+    CASE('-', Token::minus);
+    CASE('*', Token::star);
+    CASE('/', Token::slash);
+    CASE('(', Token::l_paren);
+    CASE(')', Token::r_paren);
+    CASE(':', Token::colon);
+    CASE(',', Token::comma);
 #undef CASE
     default:
-      formToken(token, BufferPtr + 1, Token::unknown);
-    }
-    return;
+      throw CalcError(start,
+                      std::string("unexpected character '") + *BufferPtr + "'");
   }
 }
 
 void Lexer::formToken(Token &Tok, const char *TokEnd, Token::TokenKind Kind) {
   Tok.Kind = Kind;
+  Tok.Pos  = position();
   Tok.Text = llvm::StringRef(BufferPtr, TokEnd - BufferPtr);
-  BufferPtr = TokEnd;
+  advanceTo(TokEnd);
 }

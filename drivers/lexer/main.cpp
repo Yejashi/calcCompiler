@@ -1,10 +1,12 @@
 #include <iostream>
 #include <memory>
+#include <string>
+
 #include "lexer.h"
 #include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/raw_ostream.h"
 
-static const char* tokenKindToString(Token::TokenKind K) {
+static const char *tokenKindToString(Token::TokenKind K) {
   switch (K) {
   case Token::eoi:      return "eoi";
   case Token::unknown:  return "unknown";
@@ -34,18 +36,24 @@ int main(int argc, char **argv) {
     }
     MB = std::move(*BufOrErr);
   } else {
-    MB = llvm::MemoryBuffer::getMemBufferCopy("with x: (a + b) * 42, y\n");
+    MB = llvm::MemoryBuffer::getMemBufferCopy("with a, b: a * (4 + b)");
   }
 
   Lexer L(MB->getBuffer());
   Token T;
-  do {
-    L.next(T);
-    std::cout << tokenKindToString(T.getKind());
-    if (T.getText().size() > 0)
-      std::cout << " [" << T.getText().str() << "]";
-    std::cout << "\n";
-  } while (!T.is(Token::eoi));
+  try {
+    do {
+      L.next(T);
+      std::cout << tokenKindToString(T.getKind());
+      if (T.getText().size() > 0)
+        std::cout << " [" << T.getText().str() << "]";
+      std::cout << " (line " << T.getPosition().Line << ", column "
+                << T.getPosition().Column << ")\n";
+    } while (!T.is(Token::eoi));
+  } catch (const CalcError &e) {
+    std::cerr << "error: " << e.what() << "\n";
+    return 1;
+  }
 
   return 0;
 }
